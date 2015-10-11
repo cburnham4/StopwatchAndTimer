@@ -1,0 +1,98 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    tools:context="letshangllc.timer.Timer">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lin_timer"
+        android:gravity="center_horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin_hour"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"
+                android:textSize="@dimen/timer_clock_size"
+                android:id="@+id/tv_hour"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:editable="true"
+                android:numeric="integer"
+                android:maxLength="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hour"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/timer_clock_size"
+
+            android:text=":"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin_minute"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"
+                android:id="@+id/tv_minute"
+                android:textSize="@dimen/timer_clock_size"
+                android:editable="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="minute"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/timer_clock_size"
+            android:text=":"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lin_second"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00"
+                android:textSize="@dimen/timer_clock_size"
+                android:id="@+id/tv_second"
+                android:editable="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="second"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.github.lzyzsd.circleprogress.DonutProgress
+        android:id="@+id/donut_progress"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        custom:donut_progress="0"
+        custom:donut_text_size="34sp"
+        custom:donut_text_color="@color/primary"
+        android:layout_below="@+id/lin_timer"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true" />
+
+    
+
+</RelativeLayout>

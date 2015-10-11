@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        android:layout_margin="5dp"
+        android:text="@string/start_time"
+        android:textColor="@color/primaryDark"
+        android:background="@color/primaryLight"
+
+        android:textSize="80sp" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lv_laps"
+        android:layout_above="@+id/lin_btmButtons"
+        android:layout_below="@+id/timer">
+
+
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/lin_btmButtons"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp">
+
+        <com.andexert.library.RippleView
+            android:id="@+id/ripple_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/start"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:background="@color/primary"
+
+                android:textSize="@dimen/btn_text_size"
+                android:text="@string/start"
+                android:elevation="8dp"
+                android:shadowColor="@color/primaryDark"/>
+
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:id="@+id/ripple_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp">
+            <Button
+                android:id="@+id/reset"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Lap"
+
+                android:textColor="@color/white"
+                android:background="@color/primary"
+
+                android:textSize="@dimen/btn_text_size"
+                android:elevation="8dp"
+                android:shadowColor="@color/primaryDark"
+
+                />
+        </com.andexert.library.RippleView>
+
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>
