@@ -50,8 +50,8 @@ public class Timer extends Fragment {
         tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
         tv_seconds = (TextView) view.findViewById(R.id.tv_second);
 
-        tv_hours.setText("01");
-        tv_minutes.setText("01");
+        tv_hours.setText("00");
+        tv_minutes.setText("00");
         tv_seconds.setText("10");
 
         tv_hours.setOnClickListener(new View.OnClickListener() {
@@ -122,27 +122,23 @@ public class Timer extends Fragment {
             /* if no time is remaining then end the task */
             if(updatedtime <= 0){
                 handler.removeCallbacks(updateTimer);
-            }
+                //Sound the alarm
+            }else {
 
-            int[] time = milliToTime.milliToTime(updatedtime);
+                int[] time = milliToTime.milliToTime(updatedtime);
             /* get the seconds out of the time */
-            int hours = time[0];
-           // Log.i("HOURS" , hours+"");
-            int minutes = time[1];
-            int seconds  = time[2];
-            int mili = time[3];
-            //if(hours<10){
+                int hours = time[0];
+                // Log.i("HOURS" , hours+"");
+                int minutes = time[1];
+                int seconds = time[2];
+                int mili = time[3];
+
                 tv_hours.setText("" + String.format("%02d", hours));
-            //}else{
-              //  tv_hours.setText(hours+"");
-            //}
-            //if(minutes<10){
-              //  tv_minutes.setText("0" + minutes);
-            //}else{
                 tv_minutes.setText("" + String.format("%02d", minutes));
-           // }
-            tv_seconds.setText("" + String.format("%02d", seconds));
-            handler.postDelayed(this, 0);
+                tv_seconds.setText("" + String.format("%02d", seconds));
+
+                handler.postDelayed(this, 100);
+            }
         }};
 
 
