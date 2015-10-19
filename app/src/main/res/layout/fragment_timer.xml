@@ -5,7 +5,7 @@
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context="letshangllc.timer.Timer">
 
-
+    <!-- LinearLayout containing clock -->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -82,6 +82,7 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Circle Progress -->
     <com.github.lzyzsd.circleprogress.DonutProgress
         android:id="@+id/donut_progress"
         android:layout_width="160dp"
@@ -93,7 +94,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true" />
 
-
+    <!-- Button Layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -143,13 +144,6 @@
                 />
         </com.andexert.library.RippleView>
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:id="@+id/tv"
-        android:text="examle"/>
 
 
 

@@ -44,11 +44,15 @@ public class Timer extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
-        tv = (TextView) view.findViewById(R.id.tv);
+
 
         tv_hours = (TextView) view.findViewById(R.id.tv_hour);
         tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
         tv_seconds = (TextView) view.findViewById(R.id.tv_second);
+
+        tv_hours.setText("01");
+        tv_minutes.setText("01");
+        tv_seconds.setText("10");
 
         tv_hours.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +115,7 @@ public class Timer extends Fragment {
     public Runnable updateTimer = new Runnable() {
         public void run() {
             /* Get the amount of time that has passed in ms */
-            timeInMilliseconds = start_time - SystemClock.uptimeMillis();
+            timeInMilliseconds = SystemClock.uptimeMillis() - start_time;
             /* subtract the total time from the starting time */
             long updatedtime = milliseconds - timeInMilliseconds;//timeSwapBuff +
 
@@ -127,21 +131,17 @@ public class Timer extends Fragment {
             int minutes = time[1];
             int seconds  = time[2];
             int mili = time[3];
-            if(hours<10){
-                tv_hours.setText("0" + hours);
-            }else{
-                tv_hours.setText(hours+"");
-            }
-            if(minutes<10){
-                tv_minutes.setText("0" + minutes);
-            }else{
-                tv_minutes.setText(minutes+"");
-            }
-            if(seconds<10){
-                tv_seconds.setText("0" + seconds);
-            }else{
-                tv_seconds.setText(seconds+"");
-            }
+            //if(hours<10){
+                tv_hours.setText("" + String.format("%02d", hours));
+            //}else{
+              //  tv_hours.setText(hours+"");
+            //}
+            //if(minutes<10){
+              //  tv_minutes.setText("0" + minutes);
+            //}else{
+                tv_minutes.setText("" + String.format("%02d", minutes));
+           // }
+            tv_seconds.setText("" + String.format("%02d", seconds));
             handler.postDelayed(this, 0);
         }};
 
