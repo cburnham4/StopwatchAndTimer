@@ -151,6 +151,6 @@
         android:id="@+id/tv"
         android:text="examle"/>
 
-    
+
 
 </RelativeLayout>
