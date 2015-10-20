@@ -30,6 +30,8 @@ public class Timer extends Fragment {
     int minutes;
     int seconds;
 
+    boolean running = false;
+
     MilliToTime milliToTime = new MilliToTime();
     Handler handler = new Handler();
 
@@ -89,22 +91,29 @@ public class Timer extends Fragment {
 
             @Override
             public void onClick(View v) {
-                hours = Integer.parseInt(tv_hours.getText().toString());
-                minutes = Integer.parseInt(tv_minutes.getText().toString());
-                seconds = Integer.parseInt(tv_seconds.getText().toString());
+                if(!running) {
+                    hours = Integer.parseInt(tv_hours.getText().toString());
+                    minutes = Integer.parseInt(tv_minutes.getText().toString());
+                    seconds = Integer.parseInt(tv_seconds.getText().toString());
 
                 /* Get the milliseconds from the initial time */
-                milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
-                Log.i("MILLISECONDS", milliseconds +"");
-                if(milliseconds == 0){
-                    return;
-                }
+                    milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
+                    Log.i("MILLISECONDS", milliseconds + "");
+                    if (milliseconds == 0) {
+                        return;
+                    }
                 /* Get the time of the start of the timer*/
-                start_time = SystemClock.uptimeMillis();
+                    start_time = SystemClock.uptimeMillis();
 
-                handler.post(updateTimer);
-                btn_start.setVisibility(View.VISIBLE);
-
+                    handler.post(updateTimer);
+                    running = true;
+                    btn_reset.setVisibility(View.VISIBLE);
+                    btn_start.setText("Pause");
+                }else{
+                    handler.removeCallbacks(updateTimer);
+                    running = false;
+                    btn_start.setText("Start");
+                }
             }
         });
 
