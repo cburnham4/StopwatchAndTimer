@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.codetroopers.betterpickers.timepicker.*;
+
 import android.os.Handler;
 import android.widget.Toast;
 
 import java.util.logging.LogRecord;
 
-public class Timer extends Fragment {
+public class Timer extends Fragment implements TimePickerDialogFragment.TimePickerDialogHandler{
     TextView tv;
     TextView tv_hours, tv_minutes, tv_seconds;
     Button btn_start, btn_reset;
@@ -173,4 +175,8 @@ public class Timer extends Fragment {
         }};
 
 
+    @Override
+    public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
+
+    }
 }

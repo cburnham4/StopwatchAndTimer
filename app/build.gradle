@@ -23,6 +23,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0'
     compile 'com.android.support:design:+'
+
     compile 'com.github.traex.rippleeffect:library:1.3'
     compile 'com.github.lzyzsd:circleprogress:1.1.0@aar'
+    compile 'com.code-troopers.betterpickers:library:2.1.2'
 }
