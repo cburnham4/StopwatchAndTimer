@@ -2,6 +2,7 @@ package letshangllc.timer;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -15,6 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import android.os.Handler;
+import android.widget.Toast;
+
 import java.util.logging.LogRecord;
 
 public class Timer extends Fragment {
@@ -47,6 +50,7 @@ public class Timer extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
 
+        final Context context = this.getContext();
 
         tv_hours = (TextView) view.findViewById(R.id.tv_hour);
         tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
@@ -91,7 +95,7 @@ public class Timer extends Fragment {
 
             @Override
             public void onClick(View v) {
-                if(!running) {
+                if (!running) {
                     hours = Integer.parseInt(tv_hours.getText().toString());
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
                     seconds = Integer.parseInt(tv_seconds.getText().toString());
@@ -109,11 +113,27 @@ public class Timer extends Fragment {
                     running = true;
                     btn_reset.setVisibility(View.VISIBLE);
                     btn_start.setText("Pause");
-                }else{
+                } else {
                     handler.removeCallbacks(updateTimer);
                     running = false;
                     btn_start.setText("Start");
                 }
+            }
+        });
+
+        btn_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(running){
+                    Toast.makeText(context ,"Pause before resetting", Toast.LENGTH_SHORT).show();
+
+                }
+                handler.removeCallbacks(updateTimer);
+                tv_hours.setText(""+ String.format("%02d", hours));
+                tv_minutes.setText("" + String.format("%02d", minutes));
+                tv_seconds.setText("" + String.format("%02d", seconds));
+                btn_start.setText("Start");
+                btn_reset.setVisibility(View.GONE);
             }
         });
 
