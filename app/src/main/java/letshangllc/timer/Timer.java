@@ -116,7 +116,7 @@ public class Timer extends Fragment {
                 } else {
                     handler.removeCallbacks(updateTimer);
                     running = false;
-                    btn_start.setText("Start");
+                    btn_start.setText("Resume");
                 }
             }
         });
@@ -127,13 +127,15 @@ public class Timer extends Fragment {
                 if(running){
                     Toast.makeText(context ,"Pause before resetting", Toast.LENGTH_SHORT).show();
 
+                }else{
+                    handler.removeCallbacks(updateTimer);
+                    tv_hours.setText(""+ String.format("%02d", hours));
+                    tv_minutes.setText("" + String.format("%02d", minutes));
+                    tv_seconds.setText("" + String.format("%02d", seconds));
+                    btn_start.setText("Start");
+                    btn_reset.setVisibility(View.GONE);
                 }
-                handler.removeCallbacks(updateTimer);
-                tv_hours.setText(""+ String.format("%02d", hours));
-                tv_minutes.setText("" + String.format("%02d", minutes));
-                tv_seconds.setText("" + String.format("%02d", seconds));
-                btn_start.setText("Start");
-                btn_reset.setVisibility(View.GONE);
+
             }
         });
 
