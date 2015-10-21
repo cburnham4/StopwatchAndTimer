@@ -3,6 +3,7 @@ package letshangllc.timer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -22,7 +23,7 @@ import android.widget.Toast;
 
 import java.util.logging.LogRecord;
 
-public class Timer extends Fragment implements TimePickerDialogFragment.TimePickerDialogHandler{
+public class Timer extends Fragment{
     TextView tv;
     TextView tv_hours, tv_minutes, tv_seconds;
     Button btn_start, btn_reset;
@@ -34,6 +35,8 @@ public class Timer extends Fragment implements TimePickerDialogFragment.TimePick
     int hours;
     int minutes;
     int seconds;
+
+    public static final String PREFS_NAME = "TimePrefs";
 
     boolean running = false;
 
@@ -66,6 +69,21 @@ public class Timer extends Fragment implements TimePickerDialogFragment.TimePick
             @Override
             public void onClick(View v) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog();
+                timePickerDialog.setTimePickerCallback(new TimePickerCallback() {
+                    @Override
+                    public void callBack() {
+                        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+                        int hours = settings.getInt("Hours", 0);
+                        int minutes = settings.getInt("Minutes", 0);
+                        int seconds = settings.getInt("Seconds", 0);
+
+                        Log.i("TIME: ", hours +":" +minutes +" : " +seconds);
+
+                        tv_hours.setText("" + String.format("%02d", hours));
+                        tv_minutes.setText("" + String.format("%02d", minutes));
+                        tv_seconds.setText("" + String.format("%02d", seconds));
+                    }
+                });
                 timePickerDialog.show(getFragmentManager(), "Time Picker");
 
                 /*
@@ -178,10 +196,4 @@ public class Timer extends Fragment implements TimePickerDialogFragment.TimePick
                 handler.postDelayed(this, 100);
             }
         }};
-
-
-    @Override
-    public void onDialogTimeSet(int reference, int hourOfDay, int minute) {
-
-    }
 }
