@@ -65,9 +65,14 @@ public class Timer extends Fragment implements TimePickerDialogFragment.TimePick
         tv_hours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog();
+                timePickerDialog.show(getFragmentManager(), "Time Picker");
+
+                /*
                 tv_hours.setBackgroundColor(getResources().getColor(R.color.primaryLight));
                 tv_minutes.setBackgroundColor(getResources().getColor(R.color.white));
                 tv_seconds.setBackgroundColor(getResources().getColor(R.color.white));
+                */
             }
         });
         tv_minutes.setOnClickListener(new View.OnClickListener() {
@@ -126,12 +131,12 @@ public class Timer extends Fragment implements TimePickerDialogFragment.TimePick
         btn_reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(running){
-                    Toast.makeText(context ,"Pause before resetting", Toast.LENGTH_SHORT).show();
+                if (running) {
+                    Toast.makeText(context, "Pause before resetting", Toast.LENGTH_SHORT).show();
 
-                }else{
+                } else {
                     handler.removeCallbacks(updateTimer);
-                    tv_hours.setText(""+ String.format("%02d", hours));
+                    tv_hours.setText("" + String.format("%02d", hours));
                     tv_minutes.setText("" + String.format("%02d", minutes));
                     tv_seconds.setText("" + String.format("%02d", seconds));
                     btn_start.setText("Start");

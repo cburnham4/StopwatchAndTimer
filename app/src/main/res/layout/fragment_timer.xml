@@ -24,10 +24,6 @@
                 android:id="@+id/tv_hour"
                 android:focusableInTouchMode="true"
                 android:text="00"
-                android:clickable="true"
-                android:editable="true"
-                android:numeric="integer"
-                android:inputType="number"
                 android:maxLength="2" />
 
             <TextView
