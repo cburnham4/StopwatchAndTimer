@@ -26,6 +26,8 @@ public class TimePickerDialog extends DialogFragment {
 
     TimePickerCallback timePickerCallback;
 
+    private Context context;
+
 
     public void setTimePickerCallback(TimePickerCallback timePickerCallback){
         this.timePickerCallback = timePickerCallback;
@@ -37,7 +39,7 @@ public class TimePickerDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        final Context context = this.getContext();
+        context = this.getContext();
         View view = inflater.inflate(R.layout.dialog_number_picker, null);
         this.setUpNumberPickers(view);
         builder.setView(view)
@@ -68,16 +70,25 @@ public class TimePickerDialog extends DialogFragment {
     }
 
     private void setUpNumberPickers(View view){
+
+        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+        int hours = settings.getInt("Hours", 0);
+        int minutes = settings.getInt("Minutes", 0);
+        int seconds = settings.getInt("Seconds", 0);
+
         numberPickerHour = (NumberPicker) view.findViewById(R.id.nmp_hour);
         numberPickerHour.setMaxValue(24);
         numberPickerHour.setMinValue(0);
+        numberPickerHour.setValue(hours);
 
         numberPickerMinute = (NumberPicker) view.findViewById(R.id.nmp_minute);
         numberPickerMinute.setMaxValue(60);
         numberPickerMinute.setMinValue(0);
+        numberPickerMinute.setValue(minutes);
 
         numberPickerSecond = (NumberPicker) view.findViewById(R.id.nmp_second);
         numberPickerSecond.setMaxValue(60);
         numberPickerSecond.setMinValue(0);
+        numberPickerSecond.setValue(seconds);
     }
 }
