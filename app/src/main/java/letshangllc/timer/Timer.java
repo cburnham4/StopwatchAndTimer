@@ -85,28 +85,6 @@ public class Timer extends Fragment{
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "Time Picker");
-
-                /*
-                tv_hours.setBackgroundColor(getResources().getColor(R.color.primaryLight));
-                tv_minutes.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_seconds.setBackgroundColor(getResources().getColor(R.color.white));
-                */
-            }
-        });
-        tv_minutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tv_hours.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_minutes.setBackgroundColor(getResources().getColor(R.color.primaryLight));
-                tv_seconds.setBackgroundColor(getResources().getColor(R.color.white));
-            }
-        });
-        tv_seconds.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tv_hours.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_minutes.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_seconds.setBackgroundColor(getResources().getColor(R.color.primaryLight));
             }
         });
 

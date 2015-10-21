@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/timer_clock_size"
             android:text=":"/>
+        <!-- Minute View -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,11 +48,6 @@
                 android:text="00"
                 android:id="@+id/tv_minute"
                 android:textSize="@dimen/timer_clock_size"
-                android:focusableInTouchMode="true"
-                android:clickable="true"
-                android:editable="true"
-                android:numeric="integer"
-                android:inputType="number"
                 android:maxLength="2"/>
 
             <TextView
