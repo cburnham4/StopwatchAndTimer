@@ -4,6 +4,7 @@ package letshangllc.timer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -39,6 +40,8 @@ public class Timer extends Fragment{
     public static final String PREFS_NAME = "TimePrefs";
 
     boolean running = false;
+    boolean alarmPlaying = false;
+    Ringtone r;
 
     MilliToTime milliToTime = new MilliToTime();
     Handler handler = new Handler();
@@ -94,7 +97,15 @@ public class Timer extends Fragment{
 
             @Override
             public void onClick(View v) {
-                if (!running) {
+                if(alarmPlaying) {
+                    if (r.isPlaying()) {
+                        r.stop();
+                    }
+
+                    alarmPlaying = false;
+                    btn_start.setText("Start");
+                    setTextTime(hours, minutes, seconds);
+                }else if (!running) {
                     hours = Integer.parseInt(tv_hours.getText().toString());
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
                     seconds = Integer.parseInt(tv_seconds.getText().toString());
@@ -153,9 +164,14 @@ public class Timer extends Fragment{
             /* if no time is remaining then end the task */
             if(updatedtime <= 0){
                 /* Stop running if the time has hit 0 */
+
                 setTextTime(0, 0, 0);
                 donutProgress.setProgress(100);
                 playAlarm();
+                alarmPlaying = true;
+                running = false;
+                btn_start.setText("Stop");
+                btn_reset.setVisibility(View.GONE);
                 handler.removeCallbacks(updateTimer);
 
                 //Sound the alarm
@@ -205,7 +221,8 @@ public class Timer extends Fragment{
         }
 
         try {
-            Ringtone r = RingtoneManager.getRingtone(context, alert);
+            r = RingtoneManager.getRingtone(context, alert);
+            r.setStreamType(AudioManager.STREAM_ALARM);
             r.play();
         }catch (Exception e) {
             e.printStackTrace();
