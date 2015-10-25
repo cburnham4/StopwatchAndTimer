@@ -123,17 +123,11 @@ public class Timer extends Fragment{
 
                     alarmPlaying = false;
                     btn_start.setText("Start");
-                    setTextTime(hours, minutes, seconds);
-                /*} else if(paused){
+                    donutProgress.setProgress(0);
                     paused = false;
-                    running = true;
-                    btn_reset.setBackgroundColor(getResources().getColor(R.color.primaryLight));
-                    Long timeResumed = SystemClock.uptimeMillis();
-                    totalTimePaused += timeResumed - pausedTime;
-
-                    //start_time = SystemClock.uptimeMillis();
-                    btn_start.setText("Pause");
-                    handler.post(updateTimer);*/
+                    handler.removeCallbacks(updateTimer);
+                    setTextTime(originalHour, originalMinute, originalSecond);
+                    btn_start.setText("Start");
                 }else if (!running) {
                     hours = Integer.parseInt(tv_hours.getText().toString());
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
@@ -148,10 +142,6 @@ public class Timer extends Fragment{
                         originalSecond = seconds;
                         originalMilliSeconds = milliseconds;
                     }
-
-
-
-
                     if (milliseconds == 0) {
                         return;
                     }
@@ -235,7 +225,7 @@ public class Timer extends Fragment{
                 int seconds = time[2];
 
                 /* Apply the percent finished to the Donut View */
-                long timePassed = originalMilliSeconds - (hours * 3600000 + minutes * 60000 + seconds * 1000);
+                long timePassed = originalMilliSeconds - updatedtime;
                // double fractionFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
                 double fractionFinished = (0.0+timePassed)/(0.0+originalMilliSeconds);
                 double percent = fractionFinished *100;
