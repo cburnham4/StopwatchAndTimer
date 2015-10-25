@@ -16,15 +16,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.timepicker.*;
-
 import android.os.Handler;
 import android.widget.Toast;
 
-import java.util.logging.LogRecord;
+import com.github.lzyzsd.circleprogress.DonutProgress;
 
 public class Timer extends Fragment{
-    TextView tv;
     TextView tv_hours, tv_minutes, tv_seconds;
     Button btn_start, btn_reset;
 
@@ -42,6 +39,8 @@ public class Timer extends Fragment{
 
     MilliToTime milliToTime = new MilliToTime();
     Handler handler = new Handler();
+
+    private DonutProgress donutProgress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,9 +60,7 @@ public class Timer extends Fragment{
         tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
         tv_seconds = (TextView) view.findViewById(R.id.tv_second);
 
-        tv_hours.setText("00");
-        tv_minutes.setText("00");
-        tv_seconds.setText("10");
+        donutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
 
         tv_hours.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,11 +74,7 @@ public class Timer extends Fragment{
                         int minutes = settings.getInt("Minutes", 0);
                         int seconds = settings.getInt("Seconds", 0);
 
-                        Log.i("TIME: ", hours +":" +minutes +" : " +seconds);
-
-                        tv_hours.setText("" + String.format("%02d", hours));
-                        tv_minutes.setText("" + String.format("%02d", minutes));
-                        tv_seconds.setText("" + String.format("%02d", seconds));
+                        setTextTime(hours, minutes, seconds);
                     }
                 });
                 timePickerDialog.show(getFragmentManager(), "Time Picker");
@@ -115,10 +108,12 @@ public class Timer extends Fragment{
                     handler.post(updateTimer);
                     running = true;
                     btn_reset.setVisibility(View.VISIBLE);
+                    btn_reset.setBackgroundColor(getResources().getColor(R.color.primaryLight));
                     btn_start.setText("Pause");
                 } else {
                     handler.removeCallbacks(updateTimer);
                     running = false;
+                    btn_reset.setBackgroundColor(getResources().getColor(R.color.primary));
                     btn_start.setText("Resume");
                 }
             }
@@ -128,13 +123,12 @@ public class Timer extends Fragment{
             @Override
             public void onClick(View v) {
                 if (running) {
+                    /* Make sure the user pauses the timer before resetting */
                     Toast.makeText(context, "Pause before resetting", Toast.LENGTH_SHORT).show();
 
                 } else {
                     handler.removeCallbacks(updateTimer);
-                    tv_hours.setText("" + String.format("%02d", hours));
-                    tv_minutes.setText("" + String.format("%02d", minutes));
-                    tv_seconds.setText("" + String.format("%02d", seconds));
+                    setTextTime(hours, minutes, seconds);
                     btn_start.setText("Start");
                     btn_reset.setVisibility(View.GONE);
                 }
@@ -155,23 +149,38 @@ public class Timer extends Fragment{
 
             /* if no time is remaining then end the task */
             if(updatedtime <= 0){
+                /* Stop running if the time has hit 0 */
+                setTextTime(0,0,0);
                 handler.removeCallbacks(updateTimer);
+                donutProgress.setProgress(100);
                 //Sound the alarm
             }else {
-
+                /* get the time out of the milliseconds */
                 int[] time = milliToTime.milliToTime(updatedtime);
-            /* get the seconds out of the time */
+
                 int hours = time[0];
-                // Log.i("HOURS" , hours+"");
                 int minutes = time[1];
                 int seconds = time[2];
-                int mili = time[3];
-
+                //donutProgress.setProgress(59);
+                double percentFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
+                double percent = percentFinished *100;
+                Log.i("PERCENT" , percent+"");
+                donutProgress.setProgress((int)percent);
+                /* Update the time using two digits */
+                setTextTime(hours, minutes, seconds);
+                /*
                 tv_hours.setText("" + String.format("%02d", hours));
                 tv_minutes.setText("" + String.format("%02d", minutes));
                 tv_seconds.setText("" + String.format("%02d", seconds));
-
+                */
+                /* Run updateTimte again in 100ms */
                 handler.postDelayed(this, 100);
             }
         }};
+
+    private void setTextTime(int hours, int minutes, int seconds){
+        tv_hours.setText("" + String.format("%02d", hours));
+        tv_minutes.setText("" + String.format("%02d", minutes));
+        tv_seconds.setText("" + String.format("%02d", seconds));
+    }
 }

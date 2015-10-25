@@ -83,11 +83,14 @@
     <!-- Circle Progress -->
     <com.github.lzyzsd.circleprogress.DonutProgress
         android:id="@+id/donut_progress"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         custom:donut_progress="0"
-        custom:donut_text_size="34sp"
+        android:layout_marginTop="20dp"
+        custom:donut_text_size="40sp"
         custom:donut_text_color="@color/primary"
+        custom:donut_unfinished_color="@color/primaryLight"
+        custom:donut_finished_color="@color/primary"
         android:layout_below="@+id/lin_timer"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true" />
@@ -133,11 +136,9 @@
                 android:text="Reset"
 
                 android:textColor="@color/white"
-                android:background="@color/primaryDark"
+                android:background="@color/primaryLight"
 
                 android:textSize="@dimen/btn_text_size"
-                android:elevation="8dp"
-                android:shadowColor="@color/primaryDark"
 
                 />
         </com.andexert.library.RippleView>
