@@ -39,7 +39,20 @@ public class Timer extends Fragment{
     public static final String PREFS_NAME = "TimePrefs";
 
     boolean running = false;
+    boolean paused = false;
     boolean alarmPlaying = false;
+
+    long timeResumed;
+    long totalTimePaused = 0L;
+    long pausedTime;
+
+    int originalHour;
+    int originalMinute;
+    int originalSecond;
+    long originalMilliSeconds;
+
+    int progress;
+
     Ringtone r;
 
     MilliToTime milliToTime = new MilliToTime();
@@ -61,64 +74,41 @@ public class Timer extends Fragment{
 
         context = this.getContext();
 
-        tv_hours = (TextView) view.findViewById(R.id.tv_hour);
-        tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
-        tv_seconds = (TextView) view.findViewById(R.id.tv_second);
-
-        donutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
+        this.findViews(view);
 
         View.OnClickListener tvTimeOnClickListener = new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog();
-
+                if(!running && !paused){
+                    TimePickerDialog timePickerDialog = new TimePickerDialog();
                 /*
                     Use a callback to get the selected values to make sure the numbers have been inserted
                     into shared preferences.
                  */
-                timePickerDialog.setTimePickerCallback(new TimePickerCallback() {
-                    @Override
-                    public void callBack() {
-                        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-                        int hours = settings.getInt("Hours", 0);
-                        int minutes = settings.getInt("Minutes", 0);
-                        int seconds = settings.getInt("Seconds", 0);
+                    timePickerDialog.setTimePickerCallback(new TimePickerCallback() {
+                        @Override
+                        public void callBack() {
+                            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+                            int hours = settings.getInt("Hours", 0);
+                            int minutes = settings.getInt("Minutes", 0);
+                            int seconds = settings.getInt("Seconds", 0);
 
                         /* set the time based on the preferences*/
-                        setTextTime(hours, minutes, seconds);
-                    }
-                });
+                            setTextTime(hours, minutes, seconds);
+                        }
+                    });
                 /* show the dialog */
-                timePickerDialog.show(getFragmentManager(), "Time Picker");
+                    timePickerDialog.show(getFragmentManager(), "Time Picker");
+                }else{
+                    Toast.makeText(context, "Reset before setting time", Toast.LENGTH_SHORT).show();
+                }
+
             }
         };
         tv_hours.setOnClickListener(tvTimeOnClickListener);
         tv_minutes.setOnClickListener(tvTimeOnClickListener);
         tv_seconds.setOnClickListener(tvTimeOnClickListener);
-
-        /*tv_hours.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog();
-                timePickerDialog.setTimePickerCallback(new TimePickerCallback() {
-                    @Override
-                    public void callBack() {
-                        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-                        int hours = settings.getInt("Hours", 0);
-                        int minutes = settings.getInt("Minutes", 0);
-                        int seconds = settings.getInt("Seconds", 0);
-
-                        setTextTime(hours, minutes, seconds);
-                    }
-                });
-                timePickerDialog.show(getFragmentManager(), "Time Picker");
-            }
-        });*/
-
-
-        btn_start = (Button) view.findViewById(R.id.btn_timer_start);
-        btn_reset = (Button) view.findViewById(R.id.btn_reset_timer);
 
         btn_reset.setVisibility(View.GONE);
 
@@ -134,6 +124,16 @@ public class Timer extends Fragment{
                     alarmPlaying = false;
                     btn_start.setText("Start");
                     setTextTime(hours, minutes, seconds);
+                /*} else if(paused){
+                    paused = false;
+                    running = true;
+                    btn_reset.setBackgroundColor(getResources().getColor(R.color.primaryLight));
+                    Long timeResumed = SystemClock.uptimeMillis();
+                    totalTimePaused += timeResumed - pausedTime;
+
+                    //start_time = SystemClock.uptimeMillis();
+                    btn_start.setText("Pause");
+                    handler.post(updateTimer);*/
                 }else if (!running) {
                     hours = Integer.parseInt(tv_hours.getText().toString());
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
@@ -141,6 +141,16 @@ public class Timer extends Fragment{
 
                     /* Get the milliseconds from the initial time */
                     milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
+
+                    if(!paused){
+                        originalHour = hours;
+                        originalMinute = minutes;
+                        originalSecond = seconds;
+                        originalMilliSeconds = milliseconds;
+                    }
+
+
+
 
                     if (milliseconds == 0) {
                         return;
@@ -151,13 +161,16 @@ public class Timer extends Fragment{
                     /* start the timer */
                     handler.post(updateTimer);
                     running = true;
+
                     btn_reset.setVisibility(View.VISIBLE);
                     btn_reset.setBackgroundColor(getResources().getColor(R.color.primaryLight));
                     btn_start.setText("Pause");
                 } else {
                     /* pause the timer */
                     handler.removeCallbacks(updateTimer);
+                    pausedTime = SystemClock.uptimeMillis();
                     running = false;
+                    paused = true;
                     btn_reset.setBackgroundColor(getResources().getColor(R.color.primary));
                     btn_start.setText("Resume");
                 }
@@ -172,10 +185,13 @@ public class Timer extends Fragment{
                     Toast.makeText(context, "Pause before resetting", Toast.LENGTH_SHORT).show();
                 } else {
                     /* Stop the timer and reset the timer and buttons */
+                    donutProgress.setProgress(0);
+                    paused = false;
                     handler.removeCallbacks(updateTimer);
-                    setTextTime(hours, minutes, seconds);
+                    setTextTime(originalHour, originalMinute, originalSecond);
                     btn_start.setText("Start");
                     btn_reset.setVisibility(View.GONE);
+                    totalTimePaused = 0;
                 }
             }
         });
@@ -188,7 +204,7 @@ public class Timer extends Fragment{
         public void run() {
 
             /* Get the amount of time that has passed in ms */
-            timeInMilliseconds = SystemClock.uptimeMillis() - start_time;
+            timeInMilliseconds = SystemClock.uptimeMillis() - start_time +totalTimePaused;
 
             /* subtract the total time from the starting time */
             long updatedtime = milliseconds - timeInMilliseconds;
@@ -198,7 +214,7 @@ public class Timer extends Fragment{
                 /* Stop running if the time has hit 0 */
                 setTextTime(0, 0, 0);
                 donutProgress.setProgress(100);
-
+                totalTimePaused = 0;
                 //Sound the alarm
                 playAlarm();
                 alarmPlaying = true;
@@ -219,9 +235,12 @@ public class Timer extends Fragment{
                 int seconds = time[2];
 
                 /* Apply the percent finished to the Donut View */
-                double fractionFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
+                long timePassed = originalMilliSeconds - (hours * 3600000 + minutes * 60000 + seconds * 1000);
+               // double fractionFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
+                double fractionFinished = (0.0+timePassed)/(0.0+originalMilliSeconds);
                 double percent = fractionFinished *100;
-                donutProgress.setProgress((int) percent);
+                progress = (int) percent;
+                donutProgress.setProgress(progress);
 
                 /* Update the timer*/
                 setTextTime(hours, minutes, seconds);
@@ -230,6 +249,19 @@ public class Timer extends Fragment{
                 handler.postDelayed(this, 100);
             }
         }};
+
+    private void resetVariables(){
+
+
+    }
+    private void findViews(View view){
+        btn_start = (Button) view.findViewById(R.id.btn_timer_start);
+        btn_reset = (Button) view.findViewById(R.id.btn_reset_timer);
+        tv_hours = (TextView) view.findViewById(R.id.tv_hour);
+        tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
+        tv_seconds = (TextView) view.findViewById(R.id.tv_second);
+        donutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
+    }
 
     private void setTextTime(int hours, int minutes, int seconds){
         /* Update the time using two digits */
