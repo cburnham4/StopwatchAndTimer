@@ -4,6 +4,9 @@ package letshangllc.timer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -41,7 +44,7 @@ public class Timer extends Fragment{
     Handler handler = new Handler();
 
     private DonutProgress donutProgress;
-
+    Context context;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +57,7 @@ public class Timer extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_timer, container, false);
 
-        final Context context = this.getContext();
+        context = this.getContext();
 
         tv_hours = (TextView) view.findViewById(R.id.tv_hour);
         tv_minutes = (TextView) view.findViewById(R.id.tv_minute);
@@ -150,9 +153,11 @@ public class Timer extends Fragment{
             /* if no time is remaining then end the task */
             if(updatedtime <= 0){
                 /* Stop running if the time has hit 0 */
-                setTextTime(0,0,0);
-                handler.removeCallbacks(updateTimer);
+                setTextTime(0, 0, 0);
                 donutProgress.setProgress(100);
+                playAlarm();
+                handler.removeCallbacks(updateTimer);
+
                 //Sound the alarm
             }else {
                 /* get the time out of the milliseconds */
@@ -165,7 +170,7 @@ public class Timer extends Fragment{
                 double percentFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
                 double percent = percentFinished *100;
                 Log.i("PERCENT" , percent+"");
-                donutProgress.setProgress((int)percent);
+                donutProgress.setProgress((int) percent);
                 /* Update the time using two digits */
                 setTextTime(hours, minutes, seconds);
                 /*
@@ -182,5 +187,28 @@ public class Timer extends Fragment{
         tv_hours.setText("" + String.format("%02d", hours));
         tv_minutes.setText("" + String.format("%02d", minutes));
         tv_seconds.setText("" + String.format("%02d", seconds));
+    }
+
+    private void playAlarm(){
+        Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        if(alert == null){
+            // alert is null, using backup
+            alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            // I can't see this ever being null (as always have a default notification)
+            // but just incase
+            if(alert == null) {
+                // alert backup is null, using 2nd backup
+                alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            }
+        }
+
+        try {
+            Ringtone r = RingtoneManager.getRingtone(context, alert);
+            r.play();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
