@@ -39,8 +39,11 @@ public class TimePickerDialog extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        context = this.getContext();
         View view = inflater.inflate(R.layout.dialog_number_picker, null);
+
+        context = this.getContext();
+
+        /* call the private method to set up the number pickers */
         this.setUpNumberPickers(view);
         builder.setView(view)
                 // Add action buttons
@@ -51,13 +54,15 @@ public class TimePickerDialog extends DialogFragment {
                         int hours = numberPickerHour.getValue();
                         int minutes = numberPickerMinute.getValue();
                         int seconds = numberPickerSecond.getValue();
-                        Log.i("TIME111: ", hours + " : " + minutes + " : " + seconds);
+
+                        /* Store the values in the editor to send values to Timer Fragment */
                         SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putInt("Hours" , hours);
                         editor.putInt("Minutes" , minutes);
                         editor.putInt("Seconds" , seconds);
                         editor.commit();
+                        /* Call the call back */
                         timePickerCallback.callBack();
                     }
                 })

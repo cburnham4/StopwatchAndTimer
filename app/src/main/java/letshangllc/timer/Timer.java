@@ -1,16 +1,15 @@
 package letshangllc.timer;
 
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -68,7 +67,37 @@ public class Timer extends Fragment{
 
         donutProgress = (DonutProgress) view.findViewById(R.id.donut_progress);
 
-        tv_hours.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener tvTimeOnClickListener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog();
+
+                /*
+                    Use a callback to get the selected values to make sure the numbers have been inserted
+                    into shared preferences.
+                 */
+                timePickerDialog.setTimePickerCallback(new TimePickerCallback() {
+                    @Override
+                    public void callBack() {
+                        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+                        int hours = settings.getInt("Hours", 0);
+                        int minutes = settings.getInt("Minutes", 0);
+                        int seconds = settings.getInt("Seconds", 0);
+
+                        /* set the time based on the preferences*/
+                        setTextTime(hours, minutes, seconds);
+                    }
+                });
+                /* show the dialog */
+                timePickerDialog.show(getFragmentManager(), "Time Picker");
+            }
+        };
+        tv_hours.setOnClickListener(tvTimeOnClickListener);
+        tv_minutes.setOnClickListener(tvTimeOnClickListener);
+        tv_seconds.setOnClickListener(tvTimeOnClickListener);
+
+        /*tv_hours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog();
@@ -85,7 +114,7 @@ public class Timer extends Fragment{
                 });
                 timePickerDialog.show(getFragmentManager(), "Time Picker");
             }
-        });
+        });*/
 
 
         btn_start = (Button) view.findViewById(R.id.btn_timer_start);
@@ -110,21 +139,23 @@ public class Timer extends Fragment{
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
                     seconds = Integer.parseInt(tv_seconds.getText().toString());
 
-                /* Get the milliseconds from the initial time */
+                    /* Get the milliseconds from the initial time */
                     milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
-                    Log.i("MILLISECONDS", milliseconds + "");
+
                     if (milliseconds == 0) {
                         return;
                     }
-                /* Get the time of the start of the timer*/
+                    /* Get the time of the start of the timer*/
                     start_time = SystemClock.uptimeMillis();
 
+                    /* start the timer */
                     handler.post(updateTimer);
                     running = true;
                     btn_reset.setVisibility(View.VISIBLE);
                     btn_reset.setBackgroundColor(getResources().getColor(R.color.primaryLight));
                     btn_start.setText("Pause");
                 } else {
+                    /* pause the timer */
                     handler.removeCallbacks(updateTimer);
                     running = false;
                     btn_reset.setBackgroundColor(getResources().getColor(R.color.primary));
@@ -139,14 +170,13 @@ public class Timer extends Fragment{
                 if (running) {
                     /* Make sure the user pauses the timer before resetting */
                     Toast.makeText(context, "Pause before resetting", Toast.LENGTH_SHORT).show();
-
                 } else {
+                    /* Stop the timer and reset the timer and buttons */
                     handler.removeCallbacks(updateTimer);
                     setTextTime(hours, minutes, seconds);
                     btn_start.setText("Start");
                     btn_reset.setVisibility(View.GONE);
                 }
-
             }
         });
 
@@ -156,25 +186,30 @@ public class Timer extends Fragment{
 
     public Runnable updateTimer = new Runnable() {
         public void run() {
+
             /* Get the amount of time that has passed in ms */
             timeInMilliseconds = SystemClock.uptimeMillis() - start_time;
+
             /* subtract the total time from the starting time */
-            long updatedtime = milliseconds - timeInMilliseconds;//timeSwapBuff +
+            long updatedtime = milliseconds - timeInMilliseconds;
 
             /* if no time is remaining then end the task */
             if(updatedtime <= 0){
                 /* Stop running if the time has hit 0 */
-
                 setTextTime(0, 0, 0);
                 donutProgress.setProgress(100);
+
+                //Sound the alarm
                 playAlarm();
                 alarmPlaying = true;
                 running = false;
+
+                /* change start button to stop alarm */
                 btn_start.setText("Stop");
                 btn_reset.setVisibility(View.GONE);
                 handler.removeCallbacks(updateTimer);
 
-                //Sound the alarm
+
             }else {
                 /* get the time out of the milliseconds */
                 int[] time = milliToTime.milliToTime(updatedtime);
@@ -182,38 +217,36 @@ public class Timer extends Fragment{
                 int hours = time[0];
                 int minutes = time[1];
                 int seconds = time[2];
-                //donutProgress.setProgress(59);
-                double percentFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
-                double percent = percentFinished *100;
-                Log.i("PERCENT" , percent+"");
+
+                /* Apply the percent finished to the Donut View */
+                double fractionFinished = (0.0+timeInMilliseconds)/(0.0+milliseconds);
+                double percent = fractionFinished *100;
                 donutProgress.setProgress((int) percent);
-                /* Update the time using two digits */
+
+                /* Update the timer*/
                 setTextTime(hours, minutes, seconds);
-                /*
-                tv_hours.setText("" + String.format("%02d", hours));
-                tv_minutes.setText("" + String.format("%02d", minutes));
-                tv_seconds.setText("" + String.format("%02d", seconds));
-                */
+
                 /* Run updateTimte again in 100ms */
                 handler.postDelayed(this, 100);
             }
         }};
 
     private void setTextTime(int hours, int minutes, int seconds){
+        /* Update the time using two digits */
         tv_hours.setText("" + String.format("%02d", hours));
         tv_minutes.setText("" + String.format("%02d", minutes));
         tv_seconds.setText("" + String.format("%02d", seconds));
     }
 
     private void playAlarm(){
+        /* Get the alarm tone */
         Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
         if(alert == null){
             // alert is null, using backup
             alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-            // I can't see this ever being null (as always have a default notification)
-            // but just incase
+            // If notication is null the use ringtone
             if(alert == null) {
                 // alert backup is null, using 2nd backup
                 alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -221,6 +254,7 @@ public class Timer extends Fragment{
         }
 
         try {
+            /* Play the alarm */
             r = RingtoneManager.getRingtone(context, alert);
             r.setStreamType(AudioManager.STREAM_ALARM);
             r.play();
