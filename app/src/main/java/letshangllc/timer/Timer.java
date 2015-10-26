@@ -51,6 +51,8 @@ public class Timer extends Fragment{
     int originalSecond;
     long originalMilliSeconds;
 
+    AdsHelper adsHelper;
+
     int progress;
 
     Ringtone r;
@@ -74,8 +76,9 @@ public class Timer extends Fragment{
 
         context = this.getContext();
 
-        AdsHelper adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
+        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
         adsHelper.runAds();
+
         this.findViews(view);
 
         View.OnClickListener tvTimeOnClickListener = new View.OnClickListener() {
@@ -281,6 +284,23 @@ public class Timer extends Fragment{
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onPause() {
+        adsHelper.onPause();
+        super.onPause();
+    }
+
+    public void onResume(){
+        adsHelper.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        adsHelper.onDestroy();
+        super.onDestroy();
     }
 
 

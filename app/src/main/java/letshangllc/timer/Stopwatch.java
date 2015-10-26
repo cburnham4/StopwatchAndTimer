@@ -38,6 +38,7 @@ public class Stopwatch extends Fragment {
 
     ArrayList<Lap> arrayOfLaps;
     boolean paused = true;
+    AdsHelper adsHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,10 @@ public class Stopwatch extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stopwatch, container, false);
+
+        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
+        adsHelper.runAds();
+
         btnStart = (Button) view.findViewById(R.id.start);
         btnReset = (Button) view.findViewById(R.id.reset);
 
@@ -170,7 +175,20 @@ public class Stopwatch extends Fragment {
             handler.postDelayed(this, 0);
         }};
 
+    @Override
+    public void onPause() {
+        adsHelper.onPause();
+        super.onPause();
+    }
 
+    public void onResume(){
+        adsHelper.onResume();
+        super.onResume();
+    }
 
-
+    @Override
+    public void onDestroy() {
+        adsHelper.onDestroy();
+        super.onDestroy();
+    }
 }
