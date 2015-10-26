@@ -51,6 +51,9 @@ public class TimePickerDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         // sign in the user ...
+                        numberPickerHour.clearFocus();
+                        numberPickerMinute.clearFocus();
+                        numberPickerSecond.clearFocus();
                         int hours = numberPickerHour.getValue();
                         int minutes = numberPickerMinute.getValue();
                         int seconds = numberPickerSecond.getValue();
