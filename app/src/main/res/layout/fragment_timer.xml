@@ -107,7 +107,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/lin_btmButtons"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/ad_layout"
         android:layout_margin="16dp">
 
         <com.andexert.library.RippleView
@@ -150,5 +150,8 @@
         </com.andexert.library.RippleView>
     </LinearLayout>
 
+    <include layout="@layout/ad_layout">
+
+    </include>
 
 </RelativeLayout>
