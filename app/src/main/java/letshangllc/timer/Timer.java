@@ -74,6 +74,8 @@ public class Timer extends Fragment{
 
         context = this.getContext();
 
+        AdsHelper adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
+        adsHelper.runAds();
         this.findViews(view);
 
         View.OnClickListener tvTimeOnClickListener = new View.OnClickListener() {
@@ -240,10 +242,6 @@ public class Timer extends Fragment{
             }
         }};
 
-    private void resetVariables(){
-
-
-    }
     private void findViews(View view){
         btn_start = (Button) view.findViewById(R.id.btn_timer_start);
         btn_reset = (Button) view.findViewById(R.id.btn_reset_timer);
@@ -284,4 +282,7 @@ public class Timer extends Fragment{
             e.printStackTrace();
         }
     }
+
+
+
 }
