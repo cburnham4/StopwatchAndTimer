@@ -22,20 +22,22 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/timer_clock_size"
                 android:id="@+id/tv_hour"
-                android:focusableInTouchMode="true"
+                android:textColor="@color/primaryDark"
                 android:text="00"
                 android:maxLength="2" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="hour"/>
+                android:text="hour"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/timer_clock_size"
-            android:text=":"/>
+            android:text=":"
+            android:textColor="@color/primaryDark"/>
         <!-- Minute View -->
         <LinearLayout
             android:layout_width="wrap_content"
@@ -47,19 +49,22 @@
                 android:layout_height="wrap_content"
                 android:text="00"
                 android:id="@+id/tv_minute"
+                android:textColor="@color/primaryDark"
                 android:textSize="@dimen/timer_clock_size"
                 android:maxLength="2"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="minute"/>
+                android:text="minute"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/timer_clock_size"
-            android:text=":"/>
+            android:text=":"
+            android:textColor="@color/primaryDark"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,12 +76,13 @@
                 android:text="00"
                 android:textSize="@dimen/timer_clock_size"
                 android:id="@+id/tv_second"
-                android:editable="true"/>
+                android:textColor="@color/primaryDark"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="second"/>
+                android:text="second"
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
     </LinearLayout>
 
