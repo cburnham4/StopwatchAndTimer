@@ -51,7 +51,7 @@ public class Timer extends Fragment{
     int originalSecond;
     long originalMilliSeconds;
 
-    AdsHelper adsHelper;
+    private AdsHelper adsHelper;
 
     int progress;
 

@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class Stopwatch extends Fragment {
@@ -54,8 +54,7 @@ public class Stopwatch extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stopwatch, container, false);
 
-        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
-        adsHelper.runAds();
+
 
         btnStart = (Button) view.findViewById(R.id.start);
         btnReset = (Button) view.findViewById(R.id.reset);
@@ -109,7 +108,7 @@ public class Stopwatch extends Fragment {
             @Override
             public void onClick(View v) {
                 /*If the timer is paused then allow the user to reset clock */
-                if(paused){
+                if (paused) {
                     /*Reset all the time values then stop timer*/
                     handler.removeCallbacks(updateTimer);
                     starttime = 0L;
@@ -131,7 +130,7 @@ public class Stopwatch extends Fragment {
                     adapter.clear();
                 }
                 /*If the time is running then Add lap when clicked*/
-                else{
+                else {
 
                     /*Since the timer is running and the variables instance variables then just use them */
                     MyTime overallTime = new MyTime(0, mins, secs, milliseconds);
@@ -152,7 +151,19 @@ public class Stopwatch extends Fragment {
                     adapter.notifyDataSetChanged();
                 }
 
-            }});
+            }
+        });
+
+        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
+        adsHelper.setUpAds();
+        int delay = 1000; // delay for 1 sec.
+        int period = getResources().getInteger(R.integer.ad_refresh_rate);
+        java.util.Timer timer = new java.util.Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                adsHelper.refreshAd();  // display the data
+            }
+        }, delay, period);
         return view;
     }
 
