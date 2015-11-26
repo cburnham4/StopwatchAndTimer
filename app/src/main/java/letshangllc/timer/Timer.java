@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
 
+import java.util.TimerTask;
+
 public class Timer extends Fragment{
     TextView tv_hours, tv_minutes, tv_seconds;
     Button btn_start, btn_reset;
@@ -76,8 +78,8 @@ public class Timer extends Fragment{
 
         context = this.getContext();
 
-        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
-        adsHelper.runAds();
+
+
 
         this.findViews(view);
 
@@ -121,7 +123,7 @@ public class Timer extends Fragment{
 
             @Override
             public void onClick(View v) {
-                if(alarmPlaying) {
+                if (alarmPlaying) {
                     if (r.isPlaying()) {
                         r.stop();
                     }
@@ -133,7 +135,7 @@ public class Timer extends Fragment{
                     handler.removeCallbacks(updateTimer);
                     setTextTime(originalHour, originalMinute, originalSecond);
                     btn_start.setText("Start");
-                }else if (!running) {
+                } else if (!running) {
                     hours = Integer.parseInt(tv_hours.getText().toString());
                     minutes = Integer.parseInt(tv_minutes.getText().toString());
                     seconds = Integer.parseInt(tv_seconds.getText().toString());
@@ -141,7 +143,7 @@ public class Timer extends Fragment{
                     /* Get the milliseconds from the initial time */
                     milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
 
-                    if(!paused){
+                    if (!paused) {
                         originalHour = hours;
                         originalMinute = minutes;
                         originalSecond = seconds;
@@ -191,6 +193,16 @@ public class Timer extends Fragment{
             }
         });
 
+        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
+        adsHelper.setUpAds();
+        int delay = 1000; // delay for 1 sec.
+        int period = getResources().getInteger(R.integer.ad_refresh_rate);
+        java.util.Timer timer = new java.util.Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                adsHelper.refreshAd();  // display the data
+            }
+        }, delay, period);
         return view;
     }
 
@@ -285,24 +297,6 @@ public class Timer extends Fragment{
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void onPause() {
-        adsHelper.onPause();
-        super.onPause();
-    }
-
-    public void onResume(){
-        adsHelper.onResume();
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        adsHelper.onDestroy();
-        super.onDestroy();
-    }
-
 
 
 }

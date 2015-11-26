@@ -185,5 +185,5 @@ public class Stopwatch extends Fragment {
             }
             handler.postDelayed(this, 0);
         }};
-    
+
 }
