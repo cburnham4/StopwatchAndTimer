@@ -185,21 +185,5 @@ public class Stopwatch extends Fragment {
             }
             handler.postDelayed(this, 0);
         }};
-
-    @Override
-    public void onPause() {
-        adsHelper.onPause();
-        super.onPause();
-    }
-
-    public void onResume(){
-        adsHelper.onResume();
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        adsHelper.onDestroy();
-        super.onDestroy();
-    }
+    
 }
