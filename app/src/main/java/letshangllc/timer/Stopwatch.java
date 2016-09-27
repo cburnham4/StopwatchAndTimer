@@ -1,9 +1,6 @@
 package letshangllc.timer;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -12,24 +9,27 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.*;
 
 
 public class Stopwatch extends Fragment {
+    /* Static variables */
+    private static String IS_PAUSED = "paused", START_TIME = "start_time", LAST_LAP_TIME = "last_lap_time",
+    TIME_IN_MILLI = "time_in_milli", TIME_SWAP_BUFF = "time_swap_buff", UPDATED_TIME = "updated_time";
+
+    ;
+
     Button btnStart, btnReset;
     TextView time;
-    long starttime = 0L;
-    long lastLapTime = 0L;
+    long starttime = 0L, lastLapTime = 0L;
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
     long updatedtime = 0L;
-    int t = 1;
+    int state = 1; // 1 = Running, 0 = Stopped
     int secs = 0;
     int mins = 0;
     int milliseconds = 0;
@@ -38,7 +38,6 @@ public class Stopwatch extends Fragment {
 
     ArrayList<Lap> arrayOfLaps;
     boolean paused = true;
-    AdsHelper adsHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,7 @@ public class Stopwatch extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stopwatch, container, false);
 
+        //updateValuesFromBundle(savedInstanceState);
 
 
         btnStart = (Button) view.findViewById(R.id.start);
@@ -75,29 +75,10 @@ public class Stopwatch extends Fragment {
 
             @Override
             public void onClick(View v) {
-                if (t == 1) {
-                    //timer will start
-                    btnStart.setText("Pause");
-                    btnReset.setText("LAP");
-                    starttime = SystemClock.uptimeMillis();
-
-                    /* Start the timer */
-                    handler.postDelayed(updateTimer, 0);
-
-                    btnReset.setVisibility(View.VISIBLE);
-                    t = 0;
-                    paused = false;
+                if (paused) {
+                    startTimer();
                 } else {
-                    //timer will pause
-                    btnStart.setText("Start");
-                    /* Since the timer is Paused, allow the user to reset time */
-                    btnReset.setText("Reset");
-                    timeSwapBuff += timeInMilliseconds;
-
-                    /*Pause the timer*/
-                    handler.removeCallbacks(updateTimer);
-                    t = 1;
-                    paused = true;
+                    pauseTime();
                 }
 
             }
@@ -109,25 +90,7 @@ public class Stopwatch extends Fragment {
             public void onClick(View v) {
                 /*If the timer is paused then allow the user to reset clock */
                 if (paused) {
-                    /*Reset all the time values then stop timer*/
-                    handler.removeCallbacks(updateTimer);
-                    starttime = 0L;
-                    timeInMilliseconds = 0L;
-                    timeSwapBuff = 0L;
-                    updatedtime = 0L;
-                    t = 1;
-                    secs = 0;
-                    mins = 0;
-                    milliseconds = 0;
-                    lastLapTime = 0L;
-                    btnStart.setText("Start");
-
-                    time.setText("00:00:00");
-
-                    btnReset.setVisibility(View.GONE);
-                    lapNum = 1;
-                    arrayOfLaps.clear();
-                    adapter.clear();
+                    resetTimer(adapter);
                 }
                 /*If the time is running then Add lap when clicked*/
                 else {
@@ -154,18 +117,79 @@ public class Stopwatch extends Fragment {
             }
         });
 
-        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
-        adsHelper.setUpAds();
-        int delay = 1000; // delay for 1 sec.
-        int period = getResources().getInteger(R.integer.ad_refresh_rate);
-        java.util.Timer timer = new java.util.Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                adsHelper.refreshAd();  // display the data
-            }
-        }, delay, period);
-        return view;
+        return  view;
     }
+
+    private void startTimer(){
+        //timer will start
+        btnStart.setText("Pause");
+        btnReset.setText("LAP");
+        starttime = SystemClock.uptimeMillis();
+
+        /* Start the timer */
+        handler.post(updateTimer);
+
+        btnReset.setVisibility(View.VISIBLE);
+        state = 0;
+        paused = false;
+    }
+
+    private void pauseTime(){
+        //timer will pause
+        btnStart.setText("Start");
+                    /* Since the timer is Paused, allow the user to reset time */
+        btnReset.setText("Reset");
+        timeSwapBuff += timeInMilliseconds;
+
+        /*Pause the timer*/
+        handler.removeCallbacks(updateTimer);
+        state = 1;
+        paused = true;
+    }
+
+    private void resetTimer(LapAdapter adapter){
+        /*Reset all the time values then stop timer*/
+        handler.removeCallbacks(updateTimer);
+        starttime = 0L;
+        timeInMilliseconds = 0L;
+        timeSwapBuff = 0L;
+        updatedtime = 0L;
+        state = 1;
+        secs = 0;
+        mins = 0;
+        milliseconds = 0;
+        lastLapTime = 0L;
+        btnStart.setText("Start");
+
+        time.setText("00:00:00");
+
+        btnReset.setVisibility(View.GONE);
+        lapNum = 1;
+        arrayOfLaps.clear();
+        paused = true;
+        adapter.clear();
+    }
+
+//    public void onSaveInstanceState(Bundle savedInstanceState) {
+//        savedInstanceState.putBoolean(IS_PAUSED, paused);
+//        savedInstanceState.putLong(START_TIME, starttime);
+////        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+////        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
+//        super.onSaveInstanceState(savedInstanceState);
+//    }
+//
+//    private void updateValuesFromBundle(Bundle savedInstanceState) {
+//        if (savedInstanceState != null) {
+//            // Update the value of mRequestingLocationUpdates from the Bundle, and
+//            // make sure that the Start Updates and Stop Updates buttons are
+//            // correctly enabled or disabled.
+//            if (savedInstanceState.keySet().contains(IS_PAUSED)) {
+//                paused = savedInstanceState.getBoolean(
+//                        IS_PAUSED);
+//            }
+//
+//        }
+//    }
 
     public Runnable updateTimer = new Runnable() {
         public void run() {

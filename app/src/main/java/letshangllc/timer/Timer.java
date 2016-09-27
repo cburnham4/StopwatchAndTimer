@@ -53,8 +53,6 @@ public class Timer extends Fragment{
     int originalSecond;
     long originalMilliSeconds;
 
-    private AdsHelper adsHelper;
-
     int progress;
 
     Ringtone r;
@@ -193,16 +191,6 @@ public class Timer extends Fragment{
             }
         });
 
-        adsHelper = new AdsHelper(view, getResources().getString(R.string.admob_timer_id),this.getActivity());
-        adsHelper.setUpAds();
-        int delay = 1000; // delay for 1 sec.
-        int period = getResources().getInteger(R.integer.ad_refresh_rate);
-        java.util.Timer timer = new java.util.Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                adsHelper.refreshAd();  // display the data
-            }
-        }, delay, period);
         return view;
     }
 

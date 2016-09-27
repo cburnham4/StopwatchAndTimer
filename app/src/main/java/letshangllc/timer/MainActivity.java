@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
     //private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-
+    AdsHelper adsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,18 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        adsHelper = new AdsHelper(getWindow().getDecorView(), getResources().getString(R.string.admob_timer_id),this);
+        adsHelper.setUpAds();
+        int delay = 1000; // delay for 1 sec.
+        int period = getResources().getInteger(R.integer.ad_refresh_rate);
+//        java.util.Timer timer = new java.util.Timer();
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            public void run() {
+//                adsHelper.refreshAd();  // display the data
+//            }
+//        }, delay, period);
+        adsHelper.runAds();
     }
 
     private void setupViewPager(ViewPager viewPager) {
