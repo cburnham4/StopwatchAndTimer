@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new StopwatchFragment(), "StopwatchFragment");
+        adapter.addFragment(new StopwatchFragment(), "Stopwatch");
         adapter.addFragment(new Timer(), "Timer");
         viewPager.setAdapter(adapter);
     }
