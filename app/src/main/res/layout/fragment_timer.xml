@@ -110,35 +110,27 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp">
 
-        <com.andexert.library.RippleView
-            android:id="@+id/ripple_timer_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
             <Button
+                android:layout_weight="1"
                 android:id="@+id/btn_timer_start"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:background="@color/primary"
+
 
                 android:textSize="@dimen/btn_text_size"
                 android:text="@string/start"
                 android:elevation="8dp"
-                android:shadowColor="@color/primaryDark"/>
+                android:background="@drawable/green_button_drawable"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"/>
 
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:id="@+id/ripple_reset_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dp">
             <Button
                 android:id="@+id/btn_reset_timer"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="5dp"
                 android:text="Reset"
 
                 android:textColor="@color/white"
@@ -146,8 +138,8 @@
 
                 android:textSize="@dimen/btn_text_size"
 
-                />
-        </com.andexert.library.RippleView>
+                android:layout_marginLeft="5dp" />
+
     </LinearLayout>
 
 </RelativeLayout>

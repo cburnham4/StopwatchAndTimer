@@ -38,46 +38,42 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp">
 
-        <com.andexert.library.RippleView
-            android:id="@+id/ripple_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+
+
             <Button
+                android:layout_weight="1"
                 android:id="@+id/start"
+
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:background="@color/primary"
+                android:background="@drawable/green_button_drawable"
 
                 android:textSize="@dimen/btn_text_size"
                 android:text="@string/start"
                 android:elevation="8dp"
-                android:shadowColor="@color/primaryDark"/>
+                android:shadowColor="@color/primaryDark"
+                android:layout_marginRight="5dp"/>
 
-        </com.andexert.library.RippleView>
 
-        <com.andexert.library.RippleView
-            android:id="@+id/ripple_reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dp">
+
+
             <Button
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
                 android:id="@+id/reset"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Lap"
 
                 android:textColor="@color/white"
-                android:background="@color/primary"
+                android:background="@drawable/green_button_drawable"
 
                 android:textSize="@dimen/btn_text_size"
                 android:elevation="8dp"
                 android:shadowColor="@color/primaryDark"
 
                 />
-        </com.andexert.library.RippleView>
 
 
 

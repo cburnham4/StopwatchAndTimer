@@ -13,6 +13,7 @@
     <color name="white">#FFFFFF</color>
 
     <item name="primary" type="color">#00897B</item>
+    <item name="primary_clicked" type="color">#26A69A</item>
     <item name="primaryDark" type="color">#004D40</item>
     <item name="accent" type="color">#1DE9B6</item>
     <color name="primaryLight">#E0F2F1</color>

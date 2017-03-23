@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -239,6 +240,8 @@ public class Timer extends Fragment{
 
                 /* Update the timer*/
                 setTextTime(hours, minutes, seconds);
+
+
 
                 /* Run updateTimte again in 100ms */
                 handler.postDelayed(this, 100);
