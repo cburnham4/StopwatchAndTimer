@@ -4,6 +4,6 @@
 /.idea/libraries
 .DS_Store
 /build
-/app/src/main/res/values/strings.xml
+/app/src/main/res/values/keys.xml
 /app/src/main/res/values/integers.xml
 /app/src/main/java/letshangllc/timer/AdsHelper.java
