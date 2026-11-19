@@ -25,13 +25,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AdsHelper {
     private static final String TAG = "AdsHelper";
 
-    private final String admobId;
+    private String admobId;
     private final Activity activity;
     private final View view;
 
     private ViewGroup adViewContainer;
     private AdView admobAdView;
     private ConsentInformation consentInformation;
+    private boolean mobileAdsReady;
     private static final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
 
     public AdsHelper(View view, String admobId, Activity activity) {
@@ -89,15 +90,31 @@ public class AdsHelper {
         }
     }
 
+    /**
+     * Switch the banner to a different ad unit (e.g. Stopwatch vs Timer tab).
+     * Recreates the AdView because unit IDs cannot be changed after load.
+     */
+    public void setAdUnitId(String newAdmobId) {
+        if (newAdmobId == null || newAdmobId.equals(admobId)) {
+            return;
+        }
+        admobId = newAdmobId;
+        if (mobileAdsReady && consentInformation != null && consentInformation.canRequestAds()) {
+            activity.runOnUiThread(this::loadBannerAd);
+        }
+    }
+
     private void initializeMobileAds() {
         if (isMobileAdsInitializeCalled.getAndSet(true)) {
+            mobileAdsReady = true;
             activity.runOnUiThread(this::loadBannerAd);
             return;
         }
 
-        new Thread(() -> MobileAds.initialize(activity, initializationStatus ->
-                activity.runOnUiThread(this::loadBannerAd)
-        )).start();
+        new Thread(() -> MobileAds.initialize(activity, initializationStatus -> {
+            mobileAdsReady = true;
+            activity.runOnUiThread(this::loadBannerAd);
+        })).start();
     }
 
     private void loadBannerAd() {
@@ -110,6 +127,7 @@ public class AdsHelper {
         if (admobAdView != null) {
             adViewContainer.removeAllViews();
             admobAdView.destroy();
+            admobAdView = null;
         }
 
         admobAdView = new AdView(activity);

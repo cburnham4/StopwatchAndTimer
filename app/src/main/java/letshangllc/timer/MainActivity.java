@@ -23,10 +23,15 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final int TAB_STOPWATCH = 0;
+    private static final int TAB_TIMER = 1;
+
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private AdsHelper adsHelper;
     private java.util.Timer adRefreshTimer;
+    private String stopwatchAdUnitId;
+    private String timerAdUnitId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +41,41 @@ public class MainActivity extends AppCompatActivity {
 
         applyWindowInsets();
 
+        stopwatchAdUnitId = getString(R.string.admob_stopwatch_id);
+        timerAdUnitId = getString(R.string.admob_timer_id);
+
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        adsHelper = new AdsHelper(getWindow().getDecorView(),
-                getResources().getString(R.string.admob_timer_id), this);
+        // Default tab is Stopwatch → stopwatch_banner_ad
+        adsHelper = new AdsHelper(getWindow().getDecorView(), stopwatchAdUnitId, this);
         adsHelper.setUpAds();
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (adsHelper == null) {
+                    return;
+                }
+                int position = tab.getPosition();
+                if (position == TAB_TIMER) {
+                    adsHelper.setAdUnitId(timerAdUnitId);
+                } else {
+                    adsHelper.setAdUnitId(stopwatchAdUnitId);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
 
         int delay = 1000;
         int period = getResources().getInteger(R.integer.ad_refresh_rate);
