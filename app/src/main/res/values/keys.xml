@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Historical ad ID file (kept tracked; was previously gitignored).
+    AdMob App ID is in ad_config.xml.
+    Amazon Mobile Ads has been removed — do not re-add amazon_ad_id.
+
+    Mapping (AdMob console → resource):
+    stopwatch_banner_ad → admob_stopwatch_id  (/2959629138)
+    timer_banner_ad     → admob_timer_id      (/5913095533)
+-->
 <resources>
-    <string name="amazon_ad_id">e262bd1582e143d2b0f9dc6acf210ead</string>
+    <string name="admob_stopwatch_id">ca-app-pub-8223005482588566/2959629138</string>
     <string name="admob_timer_id">ca-app-pub-8223005482588566/5913095533</string>
 </resources>

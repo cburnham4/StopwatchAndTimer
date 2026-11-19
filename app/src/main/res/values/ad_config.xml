@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    PRODUCTION AdMob configuration for Stopwatch and Timer
+    AdMob app: "Stopwatch and Timer" (letshangllc.timer)
+    Publisher ID: ca-app-pub-8223005482588566
+    App ID: ca-app-pub-8223005482588566~1482895938
+
+    Do NOT use the unlinked "Stopwatch" console entries (~5342955131 / ~6819688331).
+
+    Banner unit IDs live in keys.xml:
+    ================================
+    Screen / tab          | AdMob unit name       | Resource
+    Stopwatch tab         | stopwatch_banner_ad   | admob_stopwatch_id
+    Timer tab             | timer_banner_ad       | admob_timer_id
+
+    Debug builds override App ID + unit IDs with Google's official test IDs via
+    app/src/debug/res/values/ad_config.xml
+-->
+<resources>
+    <string name="admob_app_id">ca-app-pub-8223005482588566~1482895938</string>
+</resources>

@@ -1,105 +1,188 @@
 package letshangllc.timer;
 
 import android.app.Activity;
-import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowMetrics;
 
-import com.amazon.device.ads.Ad;
-import com.amazon.device.ads.AdError;
-import com.amazon.device.ads.AdListener;
-import com.amazon.device.ads.AdProperties;
-import com.amazon.device.ads.AdRegistration;
-import com.amazon.device.ads.AdSize;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.ump.ConsentDebugSettings;
+import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentRequestParameters;
+import com.google.android.ump.UserMessagingPlatform;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by cvburnha on 10/26/2015.
+ * AdMob banner helper with UMP consent.
+ * Amazon Mobile Ads has been removed (cleartext / dead SDK).
  */
-public class AdsHelper implements AdListener {
-    String amazon_id;
-    String admob_id;
+public class AdsHelper {
+    private static final String TAG = "AdsHelper";
 
-    Activity activity;
-    View view;
-    private boolean amazonAdEnabled;
-
-    Handler handler = new Handler();
+    private String admobId;
+    private final Activity activity;
+    private final View view;
 
     private ViewGroup adViewContainer;
-    private com.amazon.device.ads.AdLayout amazonAdView;
-    private com.google.android.gms.ads.AdView admobAdView;
+    private AdView admobAdView;
+    private ConsentInformation consentInformation;
+    private boolean mobileAdsReady;
+    private static final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
 
-    public AdsHelper(View view, String admob_id, Activity activity){
-        this.admob_id = admob_id;
-        this.amazon_id = activity.getResources().getString(R.string.amazon_ad_id);
+    public AdsHelper(View view, String admobId, Activity activity) {
+        this.admobId = admobId;
         this.activity = activity;
-        this.view =view;
-
+        this.view = view;
     }
 
-    public void setUpAds(){
-        AdRegistration.setAppKey(amazon_id);
-        amazonAdView = new com.amazon.device.ads.AdLayout(activity, AdSize.SIZE_AUTO);
-        amazonAdView.setListener(this);
+    /**
+     * Request UMP consent, then initialize Mobile Ads and load a banner.
+     */
+    public void setUpAds() {
+        ConsentRequestParameters.Builder paramsBuilder = new ConsentRequestParameters.Builder()
+                .setTagForUnderAgeOfConsent(false);
 
-        admobAdView = new com.google.android.gms.ads.AdView(activity);
-        admobAdView.setAdSize(com.google.android.gms.ads.AdSize.BANNER);
-        admobAdView.setAdUnitId(admob_id);
+        if (BuildConfig.DEBUG) {
+            ConsentDebugSettings debugSettings = new ConsentDebugSettings.Builder(activity)
+                    .setDebugGeography(ConsentDebugSettings.DebugGeography.DEBUG_GEOGRAPHY_EEA)
+                    .addTestDeviceHashedId(AdRequest.DEVICE_ID_EMULATOR)
+                    .build();
+            paramsBuilder.setConsentDebugSettings(debugSettings);
+        }
 
-        // Initialize view container
-        adViewContainer = (ViewGroup) view.findViewById(R.id.ad_layout);
-        amazonAdEnabled = true;
-        adViewContainer.addView(amazonAdView);
+        ConsentRequestParameters params = paramsBuilder.build();
 
-        amazonAdView.loadAd(new com.amazon.device.ads.AdTargetingOptions());
-    }
+        consentInformation = UserMessagingPlatform.getConsentInformation(activity);
+        consentInformation.requestConsentInfoUpdate(
+                activity,
+                params,
+                () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                        activity,
+                        loadAndShowError -> {
+                            if (loadAndShowError != null) {
+                                Log.w(TAG, String.format("Consent form error: %d: %s",
+                                        loadAndShowError.getErrorCode(),
+                                        loadAndShowError.getMessage()));
+                            }
+                            if (consentInformation.canRequestAds()) {
+                                initializeMobileAds();
+                            }
+                        }
+                ),
+                requestConsentError -> {
+                    Log.w(TAG, String.format("Consent request error: %d: %s",
+                            requestConsentError.getErrorCode(),
+                            requestConsentError.getMessage()));
+                    if (consentInformation.canRequestAds()) {
+                        initializeMobileAds();
+                    }
+                }
+        );
 
-
-    public void refreshAd()
-    {
-        amazonAdView.loadAd(new com.amazon.device.ads.AdTargetingOptions());
-    }
-
-    @Override
-    public void onAdLoaded(Ad ad, AdProperties adProperties) {
-        if (!amazonAdEnabled)
-        {
-            amazonAdEnabled = true;
-            adViewContainer.removeView(admobAdView);
-            adViewContainer.addView(amazonAdView);
+        if (consentInformation.canRequestAds()) {
+            initializeMobileAds();
         }
     }
 
-    @Override
-    public void onAdFailedToLoad(Ad ad, AdError adError) {
-        // Call AdMob SDK for backfill
-        //Log.e("ADERROR", adError.getMessage());
-        if (amazonAdEnabled)
-        {
-            amazonAdEnabled = false;
-            adViewContainer.removeView(amazonAdView);
-            adViewContainer.addView(admobAdView);
+    /**
+     * Switch the banner to a different ad unit (e.g. Stopwatch vs Timer tab).
+     * Recreates the AdView because unit IDs cannot be changed after load.
+     */
+    public void setAdUnitId(String newAdmobId) {
+        if (newAdmobId == null || newAdmobId.equals(admobId)) {
+            return;
         }
-//        AdRequest.Builder.addTestDevice("04CD51A7A1F806B7F55CADD6A3B84E92");
-        admobAdView.loadAd((new com.google.android.gms.ads.AdRequest.Builder()).build());
+        admobId = newAdmobId;
+        if (mobileAdsReady && consentInformation != null && consentInformation.canRequestAds()) {
+            activity.runOnUiThread(this::loadBannerAd);
+        }
     }
 
-    @Override
-    public void onAdExpanded(Ad ad) {
+    private void initializeMobileAds() {
+        if (isMobileAdsInitializeCalled.getAndSet(true)) {
+            mobileAdsReady = true;
+            activity.runOnUiThread(this::loadBannerAd);
+            return;
+        }
 
+        new Thread(() -> MobileAds.initialize(activity, initializationStatus -> {
+            mobileAdsReady = true;
+            activity.runOnUiThread(this::loadBannerAd);
+        })).start();
     }
 
-    @Override
-    public void onAdCollapsed(Ad ad) {
+    private void loadBannerAd() {
+        adViewContainer = view.findViewById(R.id.ad_layout);
+        if (adViewContainer == null) {
+            Log.e(TAG, "Ad container view not found");
+            return;
+        }
 
+        if (admobAdView != null) {
+            adViewContainer.removeAllViews();
+            admobAdView.destroy();
+            admobAdView = null;
+        }
+
+        admobAdView = new AdView(activity);
+        admobAdView.setAdUnitId(admobId);
+        admobAdView.setAdSize(getAdaptiveAdSize());
+
+        adViewContainer.removeAllViews();
+        adViewContainer.addView(admobAdView);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        admobAdView.loadAd(adRequest);
     }
 
-    @Override
-    public void onAdDismissed(Ad ad) {
+    private AdSize getAdaptiveAdSize() {
+        int adWidthPixels;
+        float density = activity.getResources().getDisplayMetrics().density;
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            WindowMetrics windowMetrics = activity.getWindowManager().getCurrentWindowMetrics();
+            adWidthPixels = windowMetrics.getBounds().width();
+        } else {
+            DisplayMetrics outMetrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+            adWidthPixels = outMetrics.widthPixels;
+        }
+
+        int adWidth = Math.max(1, (int) (adWidthPixels / density));
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth);
     }
 
+    public void refreshAd() {
+        if (admobAdView != null && consentInformation != null && consentInformation.canRequestAds()) {
+            activity.runOnUiThread(() -> {
+                AdRequest adRequest = new AdRequest.Builder().build();
+                admobAdView.loadAd(adRequest);
+            });
+        }
+    }
 
+    public void onPause() {
+        if (admobAdView != null) {
+            admobAdView.pause();
+        }
+    }
 
+    public void onResume() {
+        if (admobAdView != null) {
+            admobAdView.resume();
+        }
+    }
+
+    public void onDestroy() {
+        if (admobAdView != null) {
+            admobAdView.destroy();
+            admobAdView = null;
+        }
+    }
 }
