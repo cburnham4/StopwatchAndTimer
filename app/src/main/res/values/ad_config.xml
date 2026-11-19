@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    PRODUCTION AdMob configuration for Stopwatch and Timer
+    Publisher ID: ca-app-pub-8223005482588566
+
+    Documented location for the AdMob App ID.
+    Banner unit ID lives in keys.xml as admob_timer_id
+    (kept tracked for historical continuity).
+
+    Debug builds override IDs with Google's official test IDs via
+    app/src/debug/res/values/ad_config.xml
+-->
+<resources>
+    <!--
+        TODO: Replace with the real AdMob App ID from the AdMob console
+        for this app (publisher ca-app-pub-8223005482588566).
+        Format: ca-app-pub-8223005482588566~XXXXXXXXXX
+        Release builds will not serve ads correctly until this is set.
+    -->
+    <string name="admob_app_id">ca-app-pub-8223005482588566~TODO_APP_ID</string>
+</resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="ad_refresh_rate">5000</integer>
+    <!-- AdMob auto-refreshes banners; this is a conservative manual refresh interval (ms). -->
+    <integer name="ad_refresh_rate">60000</integer>
 </resources>

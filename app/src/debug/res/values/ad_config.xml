@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    DEBUG BUILD: Google's official test AdMob IDs.
+    Production IDs live in app/src/main/res/values/ad_config.xml
+    (and keys.xml for the banner unit).
+-->
+<resources>
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_timer_id">ca-app-pub-3940256099942544/6300978111</string>
+</resources>

@@ -1,7 +1,5 @@
 package letshangllc.timer;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by cvburnha on 10/13/2015.
  */
