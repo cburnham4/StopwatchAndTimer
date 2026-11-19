@@ -8,8 +8,8 @@ android {
         applicationId "letshangllc.timer"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 7
-        versionName "1.5"
+        versionCode 9
+        versionName "1.7"
     }
     buildTypes {
         release {
